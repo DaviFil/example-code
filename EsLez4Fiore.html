@@ -1,0 +1,95 @@
+<html>
+	<head>
+		<title>My first Three.js app</title>
+		<style>
+
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+
+	</style>
+		<script src="lib/three.js"></script>
+		<script src="lib/stats.min.js"></script>
+	</head>
+	<body>
+
+		<script>
+
+			var scene, renderer, camera, stats;
+
+			function Start() {
+
+				scene = new THREE.Scene();
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setClearColor( 0xf0f0f0 );
+				document.body.appendChild( renderer.domElement );
+
+				// cilindro
+				var cil_geometry, cil_material, cilindro;
+				cil_geometry = new THREE.CylinderGeometry(0.2, 0.2, 3);
+				cil_material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } ); 
+				cilindro = new THREE.Mesh( cil_geometry, cil_material );
+				scene.add( cilindro );
+
+				// sfera centrale
+				var sf_geometry, sf_material, sfera;
+				sf_geometry = new THREE.SphereGeometry(0.5);
+				sf_material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+				sfera = new THREE.Mesh( sf_geometry, sf_material )
+				sfera.rotation.x = 90 * Math.PI/180; //comando aggiunto A FINE ESERCIZIO altrimenti avrei l'effetto pavone
+				sfera.position.y = 1.5; //traslazione
+				cilindro.add( sfera );
+			
+				// petalo
+				var pet_geometry, pet_material, petali;
+				pet_geometry = new THREE.CylinderGeometry( 0.2, 0, 2); //radiusTop = 0
+				pet_material = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
+				
+				for (var i=0; i<24; i++) {
+				
+				petali = new THREE.Mesh( pet_geometry, pet_material );
+				petali.position.y = 1;
+				var petali_nuovi = new THREE.Object3D();
+				sfera.add(petali_nuovi);
+				petali_nuovi.rotation.z = (360/24 * Math.PI/180) * i;
+				petali_nuovi.add( petali );
+
+				}
+
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				document.body.appendChild( stats.domElement );
+
+				camera.position.z = 10;
+				camera.position.y = 5.6;
+
+			}
+
+			function Render() {
+
+				requestAnimationFrame(Render);
+				stats.update();
+				//scene.rotation.x+=0.01;
+                scene.rotation.y+=0.01;
+				//scene.rotation.z+=0.01;
+
+				renderer.render(scene, camera);
+			}
+
+			Start();
+			Render();
+
+		</script>
+	</body>
+</html>

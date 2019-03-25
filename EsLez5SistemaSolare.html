@@ -1,0 +1,157 @@
+<html>
+	<head>
+		<title>SistemaSolare</title>
+		<style>
+
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+
+	</style>
+		<script src="lib/three.js"></script>
+		<script src="lib/stats.min.js"></script>
+		<script src="lib/Coordinates.js"></script>
+		<script src="lib/OrbitControls.js"></script>
+	</head>
+	<body>
+
+		<script>
+
+			var scene, renderer, camera, stats, controls, start_time;
+
+				var sf_geometry, sf_material, sole;
+				var pi_geometry, pi_material, pianeta;
+				var lu_geometry, lu_material, luna;
+
+				var planet_moon_container_1, planet_container, moon_container_1;
+				var moon_container_2, planet_moon_container_2;
+
+			// Assi per rotazioni
+				var planet_inclination_axis = new THREE.Vector3(0,0,1);
+				var planet_rotation_axis = new THREE.Vector3(0,1,0);
+				var planet_moon_rotation_axis = new THREE.Vector3(0,1,0);
+
+				var moon_rotation_axis = new THREE.Vector3(0,1,0);
+				var moon_revolving_axis = new THREE.Vector3(0,1,0);
+
+			function Start() {
+
+				scene = new THREE.Scene();
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setClearColor( 0xf0f0f0 );
+				document.body.appendChild( renderer.domElement );
+
+				// creazione del sole
+				
+				sf_geometry = new THREE.SphereGeometry(0.8,32,32);
+				sf_material = new THREE.MeshBasicMaterial( { color: 0xffff00, wireframe: true } );
+				sole = new THREE.Mesh( sf_geometry, sf_material )
+				scene.add( sole );
+
+				// creazione del pianeta
+
+				pi_geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
+				pi_material = new THREE.MeshBasicMaterial( {color: 0x800000, wireframe: true} );
+				pianeta = new THREE.Mesh( pi_geometry, pi_material )
+				scene.add( pianeta );
+
+
+				//planet-moon container for the rotation around the sun
+                planet_moon_container_1 = new THREE.Object3D();
+                //planet-moon container for the translation from the sun
+                planet_moon_container_2 = new THREE.Object3D();
+				scene.add(planet_moon_container_1);
+                planet_moon_container_1.add(planet_moon_container_2)
+				
+				//planet container for the inclination
+                planet_container = new THREE.Object3D();
+				planet_moon_container_2.add(planet_container);
+				
+                //planet traslation from the sun
+                planet_moon_container_2.position.x = 50;
+				planet_container.add(pianeta);
+				
+                //inclination of the planet container
+                planet_container.matrix.makeRotationAxis( planet_inclination_axis, - (25 * Math.PI / 180.0) );
+                planet_container.matrixAutoUpdate = false;
+
+				// creazione della luna
+				
+				lu_geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
+				lu_material = new THREE.MeshBasicMaterial( {color: 0xc0c0c0, wireframe: true} );
+				luna = new THREE.Mesh( lu_geometry, lu_material )
+				scene.add( luna );
+
+				moon_container_1 = new THREE.Object3D();
+                //moon container for the translation from the planet
+                moon_container_2 = new THREE.Object3D();
+                planet_moon_container_2.add(moon_container_1);
+                moon_container_1.add(moon_container_2);
+                //moon translation from the planet
+                moon_container_2.position.x = 15;
+                moon_container_2.add(luna);
+
+
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				document.body.appendChild( stats.domElement );
+
+				camera.position.set(0,0,80);
+				start_time = Date.now();
+
+			}
+
+			//mapping function for all rotations
+			var value, istart, istop, ostart, ostop;
+			function mapping(value, istart, istop, ostart, ostop) {
+    			return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+  			}
+
+			function Render() {
+
+				requestAnimationFrame(Render);
+				stats.update();
+
+				var data = Date.now() - start_time;
+				
+				//planet-moon rotation around the sun
+                planet_moon_container_1.matrix.makeRotationAxis(planet_moon_rotation_axis, mapping(data % 365000, 0, 364999, 0, 2 * Math.PI));
+                planet_moon_container_1.matrixAutoUpdate = false;
+				
+				//moon rotation around the planet
+                moon_container_1.matrix.makeRotationAxis(moon_revolving_axis, mapping(data % 30416, 0, 30415, 0, 2 * Math.PI));
+                moon_container_1.matrixAutoUpdate = false;
+				
+				//planet rotation on its axis
+                pianeta.matrix.makeRotationAxis(planet_rotation_axis, mapping(data % 1000, 0, 999, 0, 2 * Math.PI));
+                pianeta.matrixAutoUpdate = false;
+				
+				//moon rotation on its axis
+                luna.matrix.makeRotationAxis(moon_rotation_axis, mapping(data % 30416, 0, 30415, 0, 2 * Math.PI));
+                luna.matrixAutoUpdate = false;
+
+				//ELEMENTI PER LA ROTAZIONE DELLA SCENA
+				//scene.rotation.x+=0.01;
+                scene.rotation.y+=0.01;
+				//scene.rotation.z+=0.01;
+				
+				renderer.render(scene, camera);
+			}
+
+			Start();
+			Render();
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,84 @@
+<html>
+	<head>
+		<title>OctaedroDiVetro</title>
+		<style>
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+		
+		canvas { 
+			width: 100%; 
+			height: 100%;
+		}
+		</style>
+		<script src="lib/three.js"></script>
+		<script src="lib/stats.min.js"></script>
+	</head>
+	<body>	
+		<script>
+
+            var scene, camera, renderer, mesh, geometry;
+
+            function Start() {
+
+			    scene = new THREE.Scene();
+			    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			    renderer = new THREE.WebGLRenderer();
+			    renderer.setSize( window.innerWidth, window.innerHeight );
+			    renderer.setClearColor( 0xffffff );
+			    document.body.appendChild( renderer.domElement );
+			
+				geometry = new THREE.Geometry();
+			    material = new THREE.MeshBasicMaterial( { color: 0x000080, wireframe: true } );
+				oct = new THREE.Mesh(geometry, material);
+
+
+				geometry.vertices.push( new THREE.Vector3( 1, 0, 0 ));   // 0  su asse a destra dell'origine
+				geometry.vertices.push( new THREE.Vector3( 0, 0, 1 ));   // 1  sulla z in fuori
+				geometry.vertices.push( new THREE.Vector3( -1, 0, 0 ));  // 2  sulla x a sinistra dell'origine
+				geometry.vertices.push( new THREE.Vector3( 0, 0, -1 ));  // 3  sulla z per dentro
+				geometry.vertices.push( new THREE.Vector3( 0, 1, 0 ));   // 4  sulla y in alto
+				geometry.vertices.push( new THREE.Vector3( 0, -1, 0 ));  // 5  sulla y in basso
+				
+				geometry.faces.push( new THREE.Face3(0, 4, 1)); 
+				geometry.faces.push( new THREE.Face3(0, 1, 5));
+				geometry.faces.push( new THREE.Face3(1, 4, 2));
+				geometry.faces.push( new THREE.Face3(1, 2, 5));
+				geometry.faces.push( new THREE.Face3(0, 3, 4));
+				geometry.faces.push( new THREE.Face3(0, 5, 3));
+				geometry.faces.push( new THREE.Face3(3, 2, 4));
+				geometry.faces.push( new THREE.Face3(3, 5, 2));
+				
+				scene.add( oct );
+
+			    stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				document.body.appendChild( stats.domElement );
+
+				camera.position.z = 3;
+
+
+            }
+			
+			
+			function Render() {
+				
+				requestAnimationFrame(Render);
+				stats.update();
+				oct.rotation.x+=0.01;
+                oct.rotation.y+=0.01;
+				renderer.render(scene, camera);
+				
+			
+			}
+
+			Start();
+			Render();
+			
+		</script>
+	</body>
+</html>
