@@ -112,9 +112,9 @@
 
 			}
 
-			//mapping function for all rotations
+			//map function for all rotations
 			var value, istart, istop, ostart, ostop;
-			function mapping(value, istart, istop, ostart, ostop) {
+			function map(value, istart, istop, ostart, ostop) {
     			return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
   			}
 
@@ -126,19 +126,19 @@
 				var data = Date.now() - start_time;
 				
 				//planet-moon rotation around the sun
-                planet_moon_container_1.matrix.makeRotationAxis(planet_moon_rotation_axis, mapping(data % 365000, 0, 364999, 0, 2 * Math.PI));
+                planet_moon_container_1.matrix.makeRotationAxis(planet_moon_rotation_axis, map(data % 365000, 0, 364999, 0, 2 * Math.PI));
                 planet_moon_container_1.matrixAutoUpdate = false;
 				
 				//moon rotation around the planet
-                moon_container_1.matrix.makeRotationAxis(moon_revolving_axis, mapping(data % 30416, 0, 30415, 0, 2 * Math.PI));
+                moon_container_1.matrix.makeRotationAxis(moon_revolving_axis, map(data % 30416, 0, 30415, 0, 2 * Math.PI));
                 moon_container_1.matrixAutoUpdate = false;
 				
 				//planet rotation on its axis
-                pianeta.matrix.makeRotationAxis(planet_rotation_axis, mapping(data % 1000, 0, 999, 0, 2 * Math.PI));
+                pianeta.matrix.makeRotationAxis(planet_rotation_axis, map(data % 1000, 0, 999, 0, 2 * Math.PI));
                 pianeta.matrixAutoUpdate = false;
 				
 				//moon rotation on its axis
-                luna.matrix.makeRotationAxis(moon_rotation_axis, mapping(data % 30416, 0, 30415, 0, 2 * Math.PI));
+                luna.matrix.makeRotationAxis(moon_rotation_axis, map(data % 30416, 0, 30415, 0, 2 * Math.PI));
                 luna.matrixAutoUpdate = false;
 
 				//scene.rotation.x+=0.01;
