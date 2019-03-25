@@ -31,16 +31,18 @@
 				var pi_geometry, pi_material, pianeta;
 				var lu_geometry, lu_material, luna;
 
-				var planet_moon_container_1, planet_container, moon_container_1;
-				var moon_container_2, planet_moon_container_2;
+				var pianeta_luna_contenitore_1, pianeta_contenitore, luna_contenitore_1;
+				var luna_contenitore_2, pianeta_luna_contenitore_2;
 
-			// Assi per rotazionii
-				var planet_inclination_axis = new THREE.Vector3(0,0,1);
-				var planet_rotation_axis = new THREE.Vector3(0,1,0);
-				var planet_moon_rotation_axis = new THREE.Vector3(0,1,0);
+			// Assi per inclinazioni, rotazioni e rivoluzioni
 
-				var moon_rotation_axis = new THREE.Vector3(0,1,0);
-				var moon_revolving_axis = new THREE.Vector3(0,1,0);
+				var pianeta_inclination_axis = new THREE.Vector3(0,0,1);
+
+				var pianeta_rotation_axis = new THREE.Vector3(0,1,0);
+				var pianeta_luna_rotation_axis = new THREE.Vector3(0,1,0);
+				var luna_rotation_axis = new THREE.Vector3(0,1,0);
+
+				var luna_revolving_axis = new THREE.Vector3(0,1,0);
 
 			function Start() {
 
@@ -66,24 +68,24 @@
 				scene.add( pianeta );
 
 
-				//planet-moon container for the rotation around the sun
-                planet_moon_container_1 = new THREE.Object3D();
-                //planet-moon container for the translation from the sun
-                planet_moon_container_2 = new THREE.Object3D();
-				scene.add(planet_moon_container_1);
-                planet_moon_container_1.add(planet_moon_container_2)
+				//pianeta-luna contenitore for the rotation around the sun
+                pianeta_luna_contenitore_1 = new THREE.Object3D();
+                //pianeta-luna contenitore for the translation from the sun
+                pianeta_luna_contenitore_2 = new THREE.Object3D();
+				scene.add(pianeta_luna_contenitore_1);
+                pianeta_luna_contenitore_1.add(pianeta_luna_contenitore_2)
 				
-				//planet container for the inclination
-                planet_container = new THREE.Object3D();
-				planet_moon_container_2.add(planet_container);
+				//pianeta contenitore for the inclination
+                pianeta_contenitore = new THREE.Object3D();
+				pianeta_luna_contenitore_2.add(pianeta_contenitore);
 				
-                //planet traslation from the sun
-                planet_moon_container_2.position.x = 50;
-				planet_container.add(pianeta);
+                //pianeta traslation from the sun
+                pianeta_luna_contenitore_2.position.x = 50;
+				pianeta_contenitore.add(pianeta);
 				
-                //inclination of the planet container
-                planet_container.matrix.makeRotationAxis( planet_inclination_axis, - (25 * Math.PI / 180.0) );
-                planet_container.matrixAutoUpdate = false;
+                //inclination of the pianeta contenitore
+                pianeta_contenitore.matrix.makeRotationAxis( pianeta_inclination_axis, - (25 * Math.PI / 180.0) );
+                pianeta_contenitore.matrixAutoUpdate = false;
 
 				// creazione della luna
 				
@@ -92,14 +94,14 @@
 				luna = new THREE.Mesh( lu_geometry, lu_material )
 				scene.add( luna );
 
-				moon_container_1 = new THREE.Object3D();
+				luna_contenitore_1 = new THREE.Object3D();
 
-                moon_container_2 = new THREE.Object3D(); //moon container for the translation from the planet
-                planet_moon_container_2.add(moon_container_1);
-                moon_container_1.add(moon_container_2);
+                luna_contenitore_2 = new THREE.Object3D(); //luna contenitore for the translation from the pianeta
+                pianeta_luna_contenitore_2.add(luna_contenitore_1);
+                luna_contenitore_1.add(luna_contenitore_2);
                 
-                moon_container_2.position.x = 15; //moon translation from the planet
-                moon_container_2.add(luna);
+                luna_contenitore_2.position.x = 15; //luna translation from the pianeta
+                luna_contenitore_2.add(luna);
 
 
 				stats = new Stats();
@@ -107,7 +109,7 @@
 				stats.domElement.style.top = '0px';
 				document.body.appendChild( stats.domElement );
 
-				camera.position.set(0,0,80);
+				camera.position.set(0,0,70);
 				start_time = Date.now();
 
 			}
@@ -125,20 +127,20 @@
 
 				var data = Date.now() - start_time;
 				
-				//planet-moon rotation around the sun
-                planet_moon_container_1.matrix.makeRotationAxis(planet_moon_rotation_axis, map(data % 365000, 0, 364999, 0, 2 * Math.PI));
-                planet_moon_container_1.matrixAutoUpdate = false;
+				//pianeta-luna rotation around the sun
+                pianeta_luna_contenitore_1.matrix.makeRotationAxis(pianeta_luna_rotation_axis, map(data % 365000, 0, 364999, 0, 2 * Math.PI));
+                pianeta_luna_contenitore_1.matrixAutoUpdate = false;
 				
-				//moon rotation around the planet
-                moon_container_1.matrix.makeRotationAxis(moon_revolving_axis, map(data % 30416, 0, 30415, 0, 2 * Math.PI));
-                moon_container_1.matrixAutoUpdate = false;
+				//luna rotation around the pianeta
+                luna_contenitore_1.matrix.makeRotationAxis(luna_revolving_axis, map(data % 30416, 0, 30415, 0, 2 * Math.PI));
+                luna_contenitore_1.matrixAutoUpdate = false;
 				
-				//planet rotation on its axis
-                pianeta.matrix.makeRotationAxis(planet_rotation_axis, map(data % 1000, 0, 999, 0, 2 * Math.PI));
+				//pianeta rotation on its axis
+                pianeta.matrix.makeRotationAxis(pianeta_rotation_axis, map(data % 1000, 0, 999, 0, 2 * Math.PI));
                 pianeta.matrixAutoUpdate = false;
 				
-				//moon rotation on its axis
-                luna.matrix.makeRotationAxis(moon_rotation_axis, map(data % 30416, 0, 30415, 0, 2 * Math.PI));
+				//luna rotation on its axis
+                luna.matrix.makeRotationAxis(luna_rotation_axis, map(data % 30416, 0, 30415, 0, 2 * Math.PI));
                 luna.matrixAutoUpdate = false;
 
 				//scene.rotation.x+=0.01;
