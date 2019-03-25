@@ -93,12 +93,12 @@
 				scene.add( luna );
 
 				moon_container_1 = new THREE.Object3D();
-                //moon container for the translation from the planet
-                moon_container_2 = new THREE.Object3D();
+
+                moon_container_2 = new THREE.Object3D(); //moon container for the translation from the planet
                 planet_moon_container_2.add(moon_container_1);
                 moon_container_1.add(moon_container_2);
-                //moon translation from the planet
-                moon_container_2.position.x = 15;
+                
+                moon_container_2.position.x = 15; //moon translation from the planet
                 moon_container_2.add(luna);
 
 
@@ -141,7 +141,6 @@
                 luna.matrix.makeRotationAxis(moon_rotation_axis, mapping(data % 30416, 0, 30415, 0, 2 * Math.PI));
                 luna.matrixAutoUpdate = false;
 
-				//ELEMENTI PER LA ROTAZIONE DELLA SCENA
 				//scene.rotation.x+=0.01;
                 scene.rotation.y+=0.01;
 				//scene.rotation.z+=0.01;
