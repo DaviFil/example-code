@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Hello Shaders!</title>
+		<title>Vertices displacement with shaders</title>
 		<style>
 		
 		body {
@@ -22,21 +22,19 @@
 	<body>
 	
 		<script type="text/x-glsl" id="vertex">
-			uniform vec3 materialColor;
-			varying vec3 vColor;
-
+			attribute float displacement;
+			
 			void main() {
-		    	// transforms the vertex from object space to clip space coords		
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-				vColor = materialColor;
+		    	vec3 newPosition = position + normal * displacement;
+				// transforms the vertex from object space to clip space coords		
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+				
 			}
 		</script>
 		
 		<script type="text/x-glsl" id="fragment">
-			varying vec3 vColor;
-
 			void main() {
-				gl_FragColor = vec4(vColor, 1.0);
+				gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
 			}
 		</script>
 	
@@ -48,24 +46,27 @@
 			
 			var renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setSize( window.innerWidth, window.innerHeight );
-			renderer.setClearColor( 0xf0f0f0 );
+			renderer.setClearColor( 0xf0fff0 );
 			document.body.appendChild( renderer.domElement );
 			
 			// scene code here
-			
-			var uniforms = {
-						materialColor:	{ type: "v3", value: new THREE.Vector3() }
-					};
 					
 			var vs = document.getElementById("vertex").textContent;
 			var fs = document.getElementById("fragment").textContent;
 			
-			uniforms.materialColor.value = new THREE.Vector3(1.0,1.0,0.0);
-			
-			var sphereMaterial = new THREE.ShaderMaterial({ uniforms: uniforms, vertexShader: vs, fragmentShader: fs });
+			var sphereMaterial = new THREE.ShaderMaterial({ vertexShader: vs, fragmentShader: fs });
 			
 			sphere = new THREE.Mesh(
-				new THREE.SphereGeometry( 10, 32, 16 ), sphereMaterial );
+				new THREE.SphereBufferGeometry( 10, 32, 16 ),
+				sphereMaterial );
+				
+			displacement = new Float32Array( sphere.geometry.attributes.position.count );
+			
+			for(var i = 0; i < displacement.length; i++) {
+			   displacement[i]=Math.random() * 30;
+		    }
+			
+			sphere.geometry.addAttribute( 'displacement', new THREE.BufferAttribute( displacement, 1 ) );
 				
 			scene.add( sphere );
 			stats = new Stats();
